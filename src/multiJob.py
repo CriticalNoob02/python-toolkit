@@ -7,7 +7,6 @@ def batch_organizer(rows:list, batch_size:int, num_works:int) -> tuple[list, int
     return = 1º lista dividida, 2º quantidade de repetições, 3º Sobras
     """
     divided_list = [rows[i:i+batch_size] for i in range(0, len(rows), batch_size)]
-    print(f"Lista dividida {divided_list}")
     repetition = len(divided_list) // num_works
     remaining = len(divided_list) % num_works
     log_wait(f"Quantidade de vezes que cada work vai rodar uma lista: {repetition}")
@@ -33,7 +32,7 @@ def multi_job(func, batch_size:int=None, rows:list=None, num_works:int=1, *args,
 
         # Iniciando processos paralelos por works;
         for _ in range(repetition):
-            processes = [multiprocessing.Process(target=func, args=(args + (chunk,),), kwargs=kwargs) for chunk in divided_list[:num_works]]
+            processes = [multiprocessing.Process(target=func, args=(args + (chunk,)), kwargs=kwargs) for chunk in divided_list[:num_works]]
             for process in processes:
                 process.start()
             for process in processes:
@@ -41,7 +40,7 @@ def multi_job(func, batch_size:int=None, rows:list=None, num_works:int=1, *args,
             divided_list = divided_list[num_works:]
 
         # Iniciando processos restantes;
-        processes = [multiprocessing.Process(target=func, args=(args + (chunk,),), kwargs=kwargs) for chunk in divided_list]
+        processes = [multiprocessing.Process(target=func, args=(args + (chunk,)), kwargs=kwargs) for chunk in divided_list]
         for process in processes:
             process.start()
         for process in processes:
